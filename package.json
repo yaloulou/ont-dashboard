@@ -6,9 +6,9 @@
   "dev": "vite",
   "build": "vite build",
   "preview": "vite preview",
-  "start": "vite preview --port $PORT",
+  "start": "vite preview --port $PORT --host",
   "preinstall": "git config --global url.\"https://github.com/\".insteadOf ssh://git@github.com/"
-  },
+},
   "dependencies": {
     "@frostui/tailwindcss": "^0.1.5",
     "@fullcalendar/core": "^6.1.8",
