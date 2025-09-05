@@ -20,7 +20,7 @@ package-lock.json
 /cypress/videos/
 /cypress/screenshots/
 
-# Editor directories and files
+# Editor directories and 
 .vscode/*
 !.vscode/extensions.json
 .idea
