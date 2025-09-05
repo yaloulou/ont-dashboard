@@ -1,8 +1,7 @@
+// Fichier: router/index.js
+
 import { createRouter, createWebHistory } from 'vue-router'
-import {allRoutes} from "@/router/routes";
-import {useFakeAuthStore} from "@/stores/fakeAuth";
-
-
+import { allRoutes } from "@/router/routes"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,30 +15,22 @@ const router = createRouter({
   },
 })
 
-// Before each route evaluates...
 router.beforeEach((routeTo, routeFrom, next) => {
-
-  // Check if auth is required on this route
-  // (including nested routes).
   const authRequired = routeTo.matched.some((route) => route.meta.authRequired)
+  const authToken = localStorage.getItem('authToken');
 
-  // If auth isn't required for the route, just continue.
-  if (!authRequired) return next()
-
-  let useFakeAuth = useFakeAuthStore()
-  // If auth is required and the user is logged in...
-  if (useFakeAuth.isAuthenticated) {
-    return next()
+  // Si la route ne nécessite pas d'authentification, on continue.
+  if (!authRequired) {
+    return next();
   }
 
-  // If auth is required and the user is NOT currently logged in,
-  // redirect to login.
-  redirectToLogin()
-
-  function redirectToLogin() {
-    // Pass the original route to the login component
-    next({ name: 'Login', query: { redirectFrom: routeTo.fullPath } })
+  // Si l'authentification est requise et que le token est présent...
+  if (authToken) {
+    return next();
   }
+
+  // Sinon, on redirige vers la page de login.
+  next({ name: 'Login', query: { redirectFrom: routeTo.fullPath } });
 })
 
 export default router
