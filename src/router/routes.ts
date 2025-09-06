@@ -104,6 +104,26 @@ const appsRoutes = [
                 component: () => import("@/views/apps/declarationfiscale/index.vue"),
             },
             {
+                path: "police",
+                name: "police",
+                component: () => import("@/views/apps/police/index.vue"),
+            },
+            {
+                path: "hebergements",
+                name: "hebergements",
+                component: () => import("@/views/apps/hebergements/index.vue"),
+            },
+            {
+                path: "utilisateurs",
+                name: "utilisateurs",
+                component: () => import("@/views/apps/utilisateurs/index.vue"),
+            },
+            {
+                path: "paiement",
+                name: "paiement",
+                component: () => import("@/views/apps/paiement/index.vue"),
+            },
+            {
                 path: "relevemensuel",
                 name: "relevemensuel",
                 component: () => import("@/views/apps/relevemensuel/index.vue"),

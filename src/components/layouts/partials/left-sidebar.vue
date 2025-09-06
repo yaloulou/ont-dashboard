@@ -84,28 +84,28 @@
         </li>
 
         <li class="menu-item">
-          <router-link to="/" class="menu-link">
+          <router-link to="/apps/paiement" class="menu-link">
             <span class="menu-icon"><i class="mgc_currency_dollar_line"></i></span>
             <span class="menu-text"> Paiement </span>
           </router-link>
         </li>
 
         <li class="menu-item">
-          <router-link to="/" class="menu-link">
+          <router-link to="/apps/utilisateurs" class="menu-link">
             <span class="menu-icon"><i class="mgc_user_3_line"></i></span>
             <span class="menu-text"> Gestion des utilisateurs </span>
           </router-link>
         </li>
 
         <li class="menu-item">
-          <router-link to="/" class="menu-link">
+          <router-link to="/apps/police" class="menu-link">
             <span class="menu-icon"><i class="mgc_badge_line"></i></span>
             <span class="menu-text"> Fiche de police </span>
           </router-link>
         </li>
 
         <li class="menu-item">
-          <router-link to="/" class="menu-link">
+          <router-link to="/apps/hebergements" class="menu-link">
             <span class="menu-icon"><i class="mgc_time_line"></i></span>
             <span class="menu-text"> Hébergements en cours </span>
           </router-link>
