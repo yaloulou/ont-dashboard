@@ -48,12 +48,12 @@
           </router-link>
         </li>
 
-        <li class="menu-item">
+        <!-- <li class="menu-item">
           <router-link to="/" class="menu-link">
             <span class="menu-icon"><i class="mgc_building_2_line"></i></span>
             <span class="menu-text"> Mes hébergements </span>
           </router-link>
-        </li>
+        </li> -->
 
         <li class="menu-item">  
           <router-link to="/apps/etablissement" class="menu-link">
