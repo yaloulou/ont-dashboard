@@ -97,12 +97,12 @@
           </router-link>
         </li>
 
-        <li class="menu-item">
+        <!-- <li class="menu-item">
           <router-link to="/apps/police" class="menu-link">
             <span class="menu-icon"><i class="mgc_badge_line"></i></span>
             <span class="menu-text"> Fiche de police </span>
           </router-link>
-        </li>
+        </li> -->
 
         <li class="menu-item">
           <router-link to="/apps/hebergements" class="menu-link">
