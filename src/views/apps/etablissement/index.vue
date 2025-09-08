@@ -54,6 +54,13 @@
               <p v-if="logoError" class="text-xs text-red-600">{{ logoError }}</p>
             </div>
           </div>
+
+          <!-- Nouveau: champ URL du logo pour remplir brand.logoUrl -->
+          <div class="mt-4">
+            <label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">Logo URL</label>
+            <input v-model.trim="form.brand.logoUrl" type="url" class="form-input" placeholder="https://example.com/logo.png" />
+            <p class="text-xs text-gray-500 mt-1">Si renseigné, cette URL sera envoyée dans <code>brand.logoUrl</code>. Le champ <code>brand.logoFile</code> sera toujours <code>null</code> dans le JSON.</p>
+          </div>
         </div>
       </div>
 
@@ -315,11 +322,12 @@
 import { defineComponent } from "vue";
 import Layout from "@/components/layouts/layout.vue";
 import Breadcrumb from "@/components/breadcrumb.vue";
+import axios from "axios";
 
 type FormModel = {
   brand: {
-    logoUrl: string;       // logo existant (URL publique) si disponible
-    logoFile: File | null; // fichier sélectionné
+    logoUrl: string;       // URL publique (optionnelle)
+    logoFile: File | null; // fichier (prévisualisation locale seulement)
   };
   base: {
     name: string;
@@ -400,6 +408,7 @@ export default defineComponent({
       provinces,
       logoPreview: "" as string | null, // URL pour l'aperçu
       logoError: "" as string,
+      isSubmitting: false as boolean,
     };
   },
   computed: {
@@ -415,13 +424,11 @@ export default defineComponent({
     }
   },
   mounted() {
-    // Si vous avez déjà une URL de logo côté serveur :
     if (this.form.brand.logoUrl) {
       this.logoPreview = this.form.brand.logoUrl;
     }
   },
   beforeUnmount() {
-    // Nettoyer l'URL objet si utilisée
     if (this.logoPreview && this.form.brand.logoFile) {
       URL.revokeObjectURL(this.logoPreview);
     }
@@ -436,7 +443,6 @@ export default defineComponent({
       const file = input.files?.[0];
       if (!file) return;
 
-      // Validation simple (taille ≤ 2 Mo)
       const MAX = 2 * 1024 * 1024;
       if (file.size > MAX) {
         this.logoError = "Le fichier dépasse 2 Mo.";
@@ -444,7 +450,6 @@ export default defineComponent({
         return;
       }
 
-      // Mettre à jour l'aperçu
       if (this.logoPreview && this.form.brand.logoFile) {
         URL.revokeObjectURL(this.logoPreview);
       }
@@ -459,34 +464,93 @@ export default defineComponent({
       this.form.brand.logoFile = null;
       this.logoPreview = this.form.brand.logoUrl || "";
       if (!this.form.brand.logoUrl) this.logoPreview = "";
-      // vider l'input file
       const el = this.$refs.fileInput as HTMLInputElement | undefined;
       if (el) el.value = "";
     },
 
+    // 🔥 Soumission JSON stricte vers l'API en POST
     async submitForm() {
-      // Exemple d’envoi en multipart/form-data (logo + JSON)
-      // import axios from "axios"; (si tu veux envoyer ici)
-      // const token = localStorage.getItem("authToken");
-      // const fd = new FormData();
-      // if (this.form.brand.logoFile) {
-      //   fd.append("logo", this.form.brand.logoFile);
-      // }
-      // fd.append("payload", new Blob([JSON.stringify({
-      //   ...this.form,
-      //   pricing: { ...this.form.pricing, average: this.avgPrice },
-      // })], { type: "application/json" }));
-      // await axios.post("/api/v1/establishment", fd, {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
+      this.isSubmitting = true;
 
-      const payload = { ...this.form, pricing: { ...this.form.pricing, average: this.avgPrice } };
-      console.log("Submitted establishment:", payload, "Logo file:", this.form.brand.logoFile);
-      alert("Formulaire soumis (voir console).");
+      // Construire le payload EXACT demandé (brand.logoFile: null)
+      const payload = {
+        brand: {
+          logoUrl: this.form.brand.logoUrl || "",
+          logoFile: null
+        },
+        base: {
+          name: this.form.base.name,
+          type: this.form.base.type,
+          nif: this.form.base.nif,
+          registrationNumber: this.form.base.registrationNumber,
+          category: this.form.base.category,
+          status: this.form.base.status
+        },
+        contact: {
+          managerName: this.form.contact.managerName,
+          email: this.form.contact.email,
+          phone: this.form.contact.phone,
+          website: this.form.contact.website
+        },
+        location: {
+          address: this.form.location.address,
+          city: this.form.location.city,
+          province: this.form.location.province,
+          postalCode: this.form.location.postalCode,
+          latitude: typeof this.form.location.latitude === "number" ? this.form.location.latitude : null,
+          longitude: typeof this.form.location.longitude === "number" ? this.form.location.longitude : null
+        },
+        facility: {
+          totalRooms: this.form.facility.totalRooms ?? null,
+          totalBeds: this.form.facility.totalBeds ?? null,
+          conferenceRooms: this.form.facility.conferenceRooms ?? null,
+          parkingSpaces: this.form.facility.parkingSpaces ?? null
+        },
+        pricing: {
+          single: this.form.pricing.single ?? null,
+          double: this.form.pricing.double ?? null,
+          suite: this.form.pricing.suite ?? null,
+          deluxe: this.form.pricing.deluxe ?? null,
+          weekendSurcharge: this.form.pricing.weekendSurcharge ?? null,
+          average: this.avgPrice // number
+        },
+        amenities: {
+          restaurant: this.form.amenities.restaurant,
+          bar: this.form.amenities.bar,
+          pool: this.form.amenities.pool,
+          gym: this.form.amenities.gym,
+          spa: this.form.amenities.spa,
+          wifi: this.form.amenities.wifi
+        },
+        banking: {
+          bankName: this.form.banking.bankName,
+          accountNumber: this.form.banking.accountNumber,
+          accountName: this.form.banking.accountName,
+          swift: this.form.banking.swift
+        }
+      };
+
+      try {
+        const url = "http://172.233.253.208:8080/api/v1/establishment";
+        const res = await axios.post(url, payload, {
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer ${localStorage.getItem("authToken") || ""}`,
+          },
+          // timeout: 20000, // optionnel
+        });
+
+        console.log("✅ Establishment saved:", res.data);
+        alert("Établissement enregistré avec succès.");
+      } catch (err: any) {
+        console.error("❌ Erreur d'envoi:", err?.response?.data || err?.message || err);
+        alert("Échec de l'enregistrement. Vérifiez la console pour les détails.");
+      } finally {
+        this.isSubmitting = false;
+      }
     },
 
     resetForm() {
-      // Réinitialiser le modèle
       this.form.brand = { logoUrl: "", logoFile: null };
       this.form.base = { name: "", type: "", nif: "", registrationNumber: "", category: "", status: "" };
       this.form.contact = { managerName: "", email: "", phone: "", website: "" };
@@ -496,7 +560,6 @@ export default defineComponent({
       this.form.amenities = { restaurant: false, bar: false, pool: false, gym: false, spa: false, wifi: false };
       this.form.banking = { bankName: "", accountNumber: "", accountName: "", swift: "" };
 
-      // Nettoyer l'aperçu
       if (this.logoPreview && this.form.brand.logoFile) URL.revokeObjectURL(this.logoPreview);
       this.logoPreview = "";
       this.logoError = "";
@@ -506,4 +569,3 @@ export default defineComponent({
   },
 });
 </script>
-

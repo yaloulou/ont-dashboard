@@ -40,7 +40,7 @@ type CardItem = {
   subtext: string;
 };
 
-const API_URL = "http://172.233.253.208:8080/api/v1/establishment/activity/recent";
+const API_URL = "https://ont-redevance.com/api/v1/establishment/activity/recent";
 
 export default defineComponent({
   data() {
