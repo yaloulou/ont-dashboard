@@ -531,7 +531,7 @@ export default defineComponent({
       };
 
       try {
-        const url = "http://172.233.253.208:8080/api/v1/establishment";
+        const url = "https://ont-redevance.com/api/v1/establishment";
         const res = await axios.post(url, payload, {
           headers: {
             "Content-Type": "application/json",
