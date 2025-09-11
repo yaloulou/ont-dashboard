@@ -130,7 +130,7 @@ export default {
           localStorage.setItem('authToken', response.data.data.token);
           localStorage.setItem('userData', JSON.stringify(response.data.data.user));
 
-          //console.log('Token stocké:', localStorage.getItem('authToken'));
+          console.log('Token stocké:', localStorage.getItem('authToken'));
 
           
           // Rediriger vers la page d'accueil
