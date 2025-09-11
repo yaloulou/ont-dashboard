@@ -488,9 +488,16 @@ export default defineComponent({
         if (filters.value.status) params.status = filters.value.status;
         if (filters.value.establishmentId) params.establishment_id = filters.value.establishmentId;
 
+        // Retrieve the token from localStorage
+        const authToken = localStorage.getItem('authToken');
+        const headers = { 
+          'Accept': "application/json",
+          'Authorization': `Bearer ${authToken}` // Ajout du jeton ici
+        };
+
         const { data } = await axios.get(API.LIST, {
           params,
-          headers: { Accept: "application/json" },
+          headers: headers,
         });
 
         // data.success, data.data[], data.pagination, data.meta...
