@@ -592,12 +592,18 @@ export default defineComponent({
           notification_emails: splitEmails(form.value.notificationEmails),
         };
 
-        await axios.post(API.CREATE, payload, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
+        // Récupérer le jeton depuis le localStorage
+        const authToken = localStorage.getItem('authToken');
+
+        // Préparer les en-têtes en incluant le jeton
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${authToken}` // Ajout du jeton ici
+        };
+
+        // Envoyer la requête avec les en-têtes mis à jour
+        await axios.post(API.CREATE, payload, { headers });
 
         await fetchRows();
         closeModal();
