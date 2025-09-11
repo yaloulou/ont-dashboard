@@ -329,7 +329,7 @@ type Row = {
 
 const API = {
   LIST:   "https://ont-redevance.com/api/v1/tax/declarations",
-  CREATE: "https://ont-redevance.com/api/v1/tax/declarations",
+  CREATE: "http://ont-redevance.com/api/v1/tax/declarations",
 };
 
 export default defineComponent({
